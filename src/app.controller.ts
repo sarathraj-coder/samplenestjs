@@ -57,6 +57,7 @@ export class AppController {
      return found
    }else {
     // return "Not item found"
+    // This is small change 
      throw new NotFoundException("Item not found")
    }
   }
