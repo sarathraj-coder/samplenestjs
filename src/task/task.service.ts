@@ -1,36 +1,72 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Task } from './task.model';
-
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { async } from 'rxjs/internal/scheduler/async';
 @Injectable()
 export class TaskService {
  
-    taskArray:Task[] = []
+   // taskArray:Task[] = []
+
+    constructor(@InjectModel('Task') private taskModel: Model<Task>){
+        
+    }
 
     createTask(task:Task){
-        this.taskArray.push(task)
-        return true
+
+      
+       var newTask = new this.taskModel({
+           name : task.name,
+           description:task.description,
+           data:task.date,
+           completedStatus: task.completedStatus
+       })
+      var i =  newTask.save()
+       // this.taskArray.push(task)
+       // this.taskModel.save()
+       return i
     }
 
-    listTask(){
-        return this.taskArray
+    async listTask(){
+        //return this.taskArray
+        // return null
+       var items = await this.taskModel.find().exec();
+       console.log(items)
+       return items.map( i => ({
+         id:i.id,  
+         name : i.name,
+         description: i.description
+       }) )
     }
 
-    viewTaskById(inputId:number){
-        return this.taskArray.find(item => item.id==inputId)
+    async listTaskSearch(task:Task){
+        //return this.taskArray
+        // return null
+       var items = await this.taskModel.find({name:task.name}).exec();
+       console.log(items)
+       return items.map( i => ({
+         id:i.id,  
+         name : i.name,
+         description: i.description
+       }) )
+    }
+
+   async viewTaskById(inputId:string){
+       // return this.taskArray.find(item => item.id==inputId)
+       // return null
+       var item = await this.taskModel.findById(inputId);
+       console.log(item)
+       return item
     }
 
 
-    deleteById(inputId:number){
-        var found  = this.taskArray.find(item => item.id==inputId)
-        if(found){
+     async   deleteById(inputId:string){
+         var itemFound =  await this.viewTaskById(inputId)
+        var item = await this.taskModel.deleteOne(itemFound);
+        console.log(item)
+        return item
+        
 
-           var filteredItems =   this.taskArray.filter(i=> i.id!=inputId)
-           this.taskArray = filteredItems
-           return true
-
-        }else{
-            throw new NotFoundException("task is not available")
-        }
     }
 
    // added

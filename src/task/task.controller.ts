@@ -25,18 +25,23 @@ export class TaskController {
     }
 
     @Get("/list")
-    listTasks(){
+    async listTasks(){
      return  this.taskService.listTask()
     }
 
-    @Get("/list1")
-    listTasks1(){
-     return  this.taskService.listTask()
+    @Post("/list-search")
+    async listTasksSearch(@Body() requestBodyDto:Task ){
+     return  this.taskService.listTaskSearch(requestBodyDto)
+    }
+
+    @Get("/:id")
+    async listTasks1(@Param("id") id:string){
+     return  this.taskService.viewTaskById(id)
     }
 
 
     @Delete("/:id")
-    deleteTasksById(@Param("id") id:number){
+    deleteTasksById(@Param("id") id:string){
      return  this.taskService.deleteById(id)
     }
 
