@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, Query } from '@nestjs/common';
 import { Task } from './task.model';
 import { TaskService } from './task.service';
-
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('task')
 export class TaskController {
@@ -21,6 +21,7 @@ export class TaskController {
 
     @Post("/")
     createTask(@Body() requestBodyDto:Task  ){
+    
      return  this.taskService.createTask(requestBodyDto)
     }
 
@@ -68,5 +69,15 @@ export class TaskController {
      // CURD -- backend (service , controller)
      // use insomnia to test all API    
 
+
+
+@Get('/sample/:id')
+findOne(
+  @Param('id', ParseIntPipe) id: number
+) {
+  console.log(typeof id === 'number'); // true
+ 
+  return 'This action returns a user';
+}
 
 }
